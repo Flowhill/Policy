@@ -65,7 +65,7 @@ class Map :
                         self.states[(i,j)].utility = self.states[(i,j)].reward + self.gamma * best[0]
                         if self.states[(i,j)].utility - oldUtility > largestChange :
                             largestChange = self.states[(i,j)].utility - oldUtility
-        
+        print(iterations)
        # pass #placeholder, delete when implementing
         
         
