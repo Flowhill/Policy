@@ -51,16 +51,18 @@ class Map :
 
 
         largestChange = 1
+        iterations = 0
         ### 2. repeat value iteration loop until largest change is smaller than
         ###    stop criterion
         while largestChange > self.stop_crit :
+            iterations = iterations + 1
             largestChange = 0
             for i in range(self.n_cols) :
                 for j in range(self.n_rows) :
                     if self.states[(i,j)].isGoal == False :
                         oldUtility = self.states[(i,j)].utility
                         best = State.selectBestAction(self.states[(i,j)])
-                        self.states[(i,j)].utility = self.states[(i,j)].reward + best[0]
+                        self.states[(i,j)].utility = self.states[(i,j)].reward + self.gamma * best[0]
                         if self.states[(i,j)].utility - oldUtility > largestChange :
                             largestChange = self.states[(i,j)].utility - oldUtility
         
@@ -70,9 +72,28 @@ class Map :
 
     ### you write this method
     def policyIteration(self) :
-        ### 1. initialize random policy
+         ### 1. initialize random policy
+        directions = ['left', 'right','up','down']
+        for i in range(self.n_cols) :
+            for j in range(self.n_rows) :
+                self.states[(i,j)].policy = directions[random.randint(0,3)]
         ### 2 repeat policy iteration loop until policy is stable
-    
+        noChange = False
+        iterations = 0
+        while not noChange :
+            iterations = iterations + 1
+            noChange = True
+            self.calculateUtilitiesLinear()
+            for i in range(self.n_cols) :
+                for j in range(self.n_rows) :
+                    if self.states[(i,j)].isGoal == False :
+                        oldPolicy = self.states[(i,j)].policy
+                        best = State.selectBestAction(self.states[(i,j)])
+                        self.states[(i,j)].policy = best[1]
+                        if self.states[(i,j)].policy != oldPolicy :
+                            noChange = False
+
+        print(iterations)
         pass #placeholder, delete when implementing
     
     def calculateUtilitiesLinear(self) :
@@ -119,7 +140,7 @@ class Map :
                             to_print = to_print + \
                                 "{0: .3f}".format(self.states[(c,r)].utility)
                         elif print_type == self.PrintType.ACTIONS :
-                            a = self.states[(c,r)].selectBestAction()
+                            a = self.states[(c,r)].policy
                             to_print = to_print + "  "
                             if a == 'left' :
                                 to_print = to_print + "<<"
