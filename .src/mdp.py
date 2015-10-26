@@ -24,7 +24,7 @@ class State :
 
     def selectBestAction(self) :
         best = max([(self.computeEU(a), a) for a in self.actions])
-        return best[1]
+        return best
 
 
 
@@ -43,27 +43,28 @@ class Map :
     ### you write this method
     def valueIteration(self) :
         ### 1. initialize utilities to 0
-        for state in self.states: ### Set each non-goal state's utility to 0
-            if not state.isGoal :
-                state.utility = 0
+
+        for i in range(self.n_cols) :
+            for j in range(self.n_rows) :
+                if self.states[(i,j)].isGoal == False :
+                    self.states[(i,j)].utility = 0
+
 
         largestChange = 1
-
-        while largestChange > self.stop_crit :
-            largestChange = 0
-            for state in self.states :
-                if not state.isGoal :
-                    oldUtility = state.utility
-                    state.utility = state.reward + State.selectBestAction(self)
-                    if state.utility - oldUtility > largestChange :
-                        largestChange = state.utility - oldUtility
-                    
-
-
         ### 2. repeat value iteration loop until largest change is smaller than
         ###    stop criterion
+        while largestChange > self.stop_crit :
+            largestChange = 0
+            for i in range(self.n_cols) :
+                for j in range(self.n_rows) :
+                    if self.states[(i,j)].isGoal == False :
+                        oldUtility = self.states[(i,j)].utility
+                        best = State.selectBestAction(self.states[(i,j)])
+                        self.states[(i,j)].utility = self.states[(i,j)].reward + best[0]
+                        if self.states[(i,j)].utility - oldUtility > largestChange :
+                            largestChange = self.states[(i,j)].utility - oldUtility
         
-        pass #placeholder, delete when implementing
+       # pass #placeholder, delete when implementing
         
         
 
