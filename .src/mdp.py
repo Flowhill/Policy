@@ -2,6 +2,7 @@
 
 import random
 import numpy
+import time
 from problem_utils import *
 
 class State :
@@ -42,8 +43,15 @@ class Map :
 
     ### you write this method
     def valueIteration(self) :
+       #Arrays for testing effects of gamma and stop_crit on the algorithm
+        gammaArray = [0.1, 0.5, 0.8, 0.9, 0.99, 0.999, 1]
+        stopCritArray = [0.001, 0.01, 0.05, 0.1, 0.8]
+        #for x in gammaArray :
+        #    self.gamma = x
+        #for x in stopCritArray :
+        #    self.stop_crit = x
         ### 1. initialize utilities to 0
-
+        start = time.time()
         for i in range(self.n_cols) :
             for j in range(self.n_rows) :
                 if self.states[(i,j)].isGoal == False :
@@ -65,15 +73,20 @@ class Map :
                         self.states[(i,j)].utility = self.states[(i,j)].reward + self.gamma * best[0]
                         if self.states[(i,j)].utility - oldUtility > largestChange :
                             largestChange = self.states[(i,j)].utility - oldUtility
-        print(iterations)
-       # pass #placeholder, delete when implementing
-        
+        end = time.time()
+        self.printValues()
+        print('iterations:', iterations, 'time : ', end - start)
+    #
         
 
     ### you write this method
     def policyIteration(self) :
+        gammaArray = [0.1, 0.5, 0.8, 0.9, 0.99]
          ### 1. initialize random policy
         directions = ['left', 'right','up','down']
+        #for x in gammaArray :
+        #    self.gamma = x
+        start = time.time()
         for i in range(self.n_cols) :
             for j in range(self.n_rows) :
                 self.states[(i,j)].policy = directions[random.randint(0,3)]
@@ -92,9 +105,10 @@ class Map :
                         self.states[(i,j)].policy = best[1]
                         if self.states[(i,j)].policy != oldPolicy :
                             noChange = False
-
-        print(iterations)
-        pass #placeholder, delete when implementing
+        end = time.time()
+        self.printActions()
+        print('iterations:', iterations, 'time : ', end - start)
+    #
     
     def calculateUtilitiesLinear(self) :
         n_states = len(self.states)
