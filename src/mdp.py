@@ -25,7 +25,7 @@ class State :
 
     def selectBestAction(self) :
         best = max([(self.computeEU(a), a) for a in self.actions])
-        return best
+        return best #used to be return best[1]
 
 
 
@@ -43,7 +43,7 @@ class Map :
 
     ### you write this method
     def valueIteration(self) :
-       #Arrays for testing effects of gamma and stop_crit on the algorithm
+       #Arrays and loops for testing effects of gamma and stop_crit on the algorithm
         gammaArray = [0.1, 0.5, 0.8, 0.9, 0.99, 0.999, 1]
         stopCritArray = [0.001, 0.01, 0.05, 0.1, 0.8]
         #for x in gammaArray :
@@ -65,13 +65,13 @@ class Map :
         while largestChange > self.stop_crit :
             iterations = iterations + 1
             largestChange = 0
-            for i in range(self.n_cols) :
+            for i in range(self.n_cols) : #Loop over all states
                 for j in range(self.n_rows) :
-                    if self.states[(i,j)].isGoal == False :
-                        oldUtility = self.states[(i,j)].utility
+                    if self.states[(i,j)].isGoal == False : #That arent goals
+                        oldUtility = self.states[(i,j)].utility #Save utilities
                         best = State.selectBestAction(self.states[(i,j)])
-                        self.states[(i,j)].utility = self.states[(i,j)].reward + self.gamma * best[0]
-                        if self.states[(i,j)].utility - oldUtility > largestChange :
+                        self.states[(i,j)].utility = self.states[(i,j)].reward + self.gamma * best[0] #Calculate utilities
+                        if self.states[(i,j)].utility - oldUtility > largestChange : #check whether this change is larger than the biggest until now
                             largestChange = self.states[(i,j)].utility - oldUtility
         end = time.time()
         self.printValues()
@@ -81,9 +81,11 @@ class Map :
 
     ### you write this method
     def policyIteration(self) :
-        gammaArray = [0.1, 0.5, 0.8, 0.9, 0.99]
+
          ### 1. initialize random policy
         directions = ['left', 'right','up','down']
+        #Array and loop for testing effect of gamma
+        gammaArray = [0.1, 0.5, 0.8, 0.9, 0.99]
         #for x in gammaArray :
         #    self.gamma = x
         start = time.time()
@@ -93,17 +95,17 @@ class Map :
         ### 2 repeat policy iteration loop until policy is stable
         noChange = False
         iterations = 0
-        while not noChange :
+        while not noChange : #While the policy hasnt changed
             iterations = iterations + 1
-            noChange = True
+            noChange = True # End the loop if no change has been detected at (1)
             self.calculateUtilitiesLinear()
-            for i in range(self.n_cols) :
+            for i in range(self.n_cols) : #Loop over all states
                 for j in range(self.n_rows) :
-                    if self.states[(i,j)].isGoal == False :
-                        oldPolicy = self.states[(i,j)].policy
-                        best = State.selectBestAction(self.states[(i,j)])
+                    if self.states[(i,j)].isGoal == False : #That arent goals
+                        oldPolicy = self.states[(i,j)].policy #Save the old policy
+                        best = State.selectBestAction(self.states[(i,j)]) #Select best policy due to surrounding utilities
                         self.states[(i,j)].policy = best[1]
-                        if self.states[(i,j)].policy != oldPolicy :
+                        if self.states[(i,j)].policy != oldPolicy : # (1) If policy changed keep on looping
                             noChange = False
         end = time.time()
         self.printActions()
@@ -154,7 +156,7 @@ class Map :
                             to_print = to_print + \
                                 "{0: .3f}".format(self.states[(c,r)].utility)
                         elif print_type == self.PrintType.ACTIONS :
-                            a = self.states[(c,r)].policy
+                            a = self.states[(c,r)].policy #policy used to be selectBestAction()
                             to_print = to_print + "  "
                             if a == 'left' :
                                 to_print = to_print + "<<"
